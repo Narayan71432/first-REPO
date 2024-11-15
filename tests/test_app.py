@@ -3,9 +3,11 @@ from app import app
 
 @pytest.fixture
 def test_client():
-    return app.test_client
+    # Return the test client correctly
+    with app.test_client() as client:
+        yield client
 
-async def test_process_survey_success(test_client):
+def test_process_survey_success(test_client):
     payload = {
         "user_id": "test_user",
         "survey_results": [
@@ -21,5 +23,9 @@ async def test_process_survey_success(test_client):
             {"question_number": 10, "question_value": 6}
         ]
     }
-    response = await test_client.post("/process-survey", json=payload)
-    assert response.status == 200
+
+    # Send the request using the test client
+    response = test_client.post("/process-survey", json=payload)
+
+    # Assert the response status code
+    assert response.status_code == 200
