@@ -27,17 +27,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 4: Run unit tests with coverage
+      # Step 4: Set PYTHONPATH for module discovery
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+      # Step 5: Run tests and measure coverage
       - name: Run tests and measure coverage
         run: |
           pytest --cov=app tests/
 
-      # Step 5: Ensure at least 80% coverage
+      # Step 6: Ensure at least 80% coverage
       - name: Check coverage threshold
         run: |
           coverage report --fail-under=80
-
-
-
-
-
