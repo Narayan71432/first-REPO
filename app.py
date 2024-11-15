@@ -21,7 +21,7 @@ db = client['survey_database']
 collection = db['survey_results']
 
 # Load Hugging Face pipeline for text generation using distilgpt2
-generator = pipeline('text-generation', model='distilgpt2')
+generator = pipeline('text-generation', model='distilgpt2', framework='pt')
 
 # MongoDB Connection Test
 @app.listener('before_server_start')
@@ -118,6 +118,7 @@ def generate_description(average):
 
         input_text = system_prompt + "\n" + main_content
 
+        # Ensure 'generator' uses the right backend (PyTorch in this case)
         result = generator(input_text, max_length=150, num_return_sequences=1, truncation=True)
 
         return result[0]['generated_text']

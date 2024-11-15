@@ -1,13 +1,17 @@
-import pytest
-from app import app
+import sys
+sys.path.append('D:/disha1')  # Add your project directory to the Python path
 
-@pytest.fixture
+from app import app  # Now you can import app after modifying the sys.path
+
+import pytest
+
+@pytest.fixture(scope="function")  # Or other scopes: class, module, session
 def test_client():
-    # Return the test client correctly
     with app.test_client() as client:
         yield client
 
-def test_process_survey_success(test_client):
+@pytest.mark.asyncio  # Mark the test as async since Sanic is asynchronous
+async def test_process_survey_success(test_client):
     payload = {
         "user_id": "test_user",
         "survey_results": [
@@ -25,7 +29,16 @@ def test_process_survey_success(test_client):
     }
 
     # Send the request using the test client
-    response = test_client.post("/process-survey", json=payload)
+    response = await test_client.post("/process-survey", json=payload)
 
     # Assert the response status code
     assert response.status_code == 200
+    
+    # Assert the response JSON body (modify according to your expected response structure)
+    expected_response = {
+        "status": "success",  # Modify with actual expected response
+        "message": "Survey processed successfully",
+        # Add other keys that are expected in the response
+    }
+    
+    assert response.json() == expected_response
